@@ -1,0 +1,14 @@
+:root {
+}
+
+.toolbarPanel {
+    background-color: rgb(99, 99, 99);
+    -unity-background-scale-mode: stretch-to-fill;
+    height: 200px;
+    min-height: 152px;
+    max-height: 152px;
+    aspect-ratio: 1.5;
+    max-width: 1440px;
+    min-width: 1440px;
+    width: 1440px;
+}
