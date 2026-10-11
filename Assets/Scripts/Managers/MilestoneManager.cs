@@ -24,7 +24,6 @@ public class MilestoneManager : MonoBehaviour
 
     private void Update()
     {
-        initialPos = transform.position;
         if (activeMilestone == null) {return;}
         activeMilestone.CheckCompletion();
         foreach (Goal goal in activeMilestone.subGoals)

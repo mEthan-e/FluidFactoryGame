@@ -1,3 +1,4 @@
+
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -9,6 +10,7 @@ public class BlockBuilder : MonoBehaviour
     public GameObject previewPrefab;
     public float gridSize = 1f;
     public float layerY = 0f;
+    public float offset = 1f;
 
     [Header("Controls")]
     public KeyCode placeKey = KeyCode.Mouse0;
@@ -31,6 +33,7 @@ public class BlockBuilder : MonoBehaviour
         new Dictionary<Vector2Int, GameObject>();
 
     private GameObject previewBlock;
+
     private int rotationIndex = 0;
     private bool isMirrored = false;
 
@@ -91,6 +94,7 @@ public class BlockBuilder : MonoBehaviour
             return;
 
         Camera cam = Camera.main;
+
         if (cam == null)
             return;
 
@@ -101,11 +105,18 @@ public class BlockBuilder : MonoBehaviour
         {
             Vector3 hitPos = hit.point;
 
+            // Snap X and Z to the grid
             int gx = Mathf.RoundToInt(hitPos.x / gridSize);
             int gz = Mathf.RoundToInt(hitPos.z / gridSize);
 
-            Vector3 previewPos =
-                new Vector3(gx * gridSize, layerY, gz * gridSize);
+            // Use the TOP of the ground object's collider
+            float groundY = hit.collider.bounds.max.y + offset;
+
+            Vector3 previewPos = new Vector3(
+                gx * gridSize,
+                groundY,
+                gz * gridSize
+            );
 
             previewBlock.SetActive(true);
             previewBlock.transform.position = previewPos;
@@ -184,7 +195,9 @@ public class BlockBuilder : MonoBehaviour
     void ApplyRotation(Transform t)
     {
         float baseY = rotationIndex * 90f;
-        t.localRotation = Quaternion.Euler(0f, baseY, 0f);
+
+        t.localRotation =
+            Quaternion.Euler(0f, baseY, 0f);
     }
 
     // BLOCK MIRRORING
@@ -196,7 +209,11 @@ public class BlockBuilder : MonoBehaviour
         Transform model = root.GetChild(0);
 
         Vector3 s = model.localScale;
-        s.z = Mathf.Abs(s.z) * (isMirrored ? -1 : 1);
+
+        s.z =
+            Mathf.Abs(s.z) *
+            (isMirrored ? -1 : 1);
+
         model.localScale = s;
     }
 
@@ -214,20 +231,25 @@ public class BlockBuilder : MonoBehaviour
 
         // Swap positions
         Vector3 tempPos = entry.localPosition;
+
         entry.localPosition = exit.localPosition;
         exit.localPosition = tempPos;
 
         // Swap rotations
         Quaternion tempRot = entry.localRotation;
+
         entry.localRotation = exit.localRotation;
         exit.localRotation = tempRot;
     }
 
     // Recursive child finder
-    Transform FindChildRecursive(Transform parent, string name)
+    Transform FindChildRecursive(
+        Transform parent,
+        string name)
     {
-        foreach (Transform child in
-            parent.GetComponentsInChildren<Transform>(true))
+        foreach (
+            Transform child
+            in parent.GetComponentsInChildren<Transform>(true))
         {
             if (child.name == name)
                 return child;
@@ -242,18 +264,27 @@ public class BlockBuilder : MonoBehaviour
             !previewBlock.activeSelf)
             return;
 
-        Vector3 pos = previewBlock.transform.position;
+        Vector3 pos =
+            previewBlock.transform.position;
 
-        int gx = Mathf.RoundToInt(pos.x / gridSize);
-        int gz = Mathf.RoundToInt(pos.z / gridSize);
+        int gx =
+            Mathf.RoundToInt(pos.x / gridSize);
 
-        Vector2Int gridPos = new Vector2Int(gx, gz);
+        int gz =
+            Mathf.RoundToInt(pos.z / gridSize);
+
+        Vector2Int gridPos =
+            new Vector2Int(gx, gz);
 
         if (placedBlocks.ContainsKey(gridPos))
             return;
 
         GameObject block =
-            Instantiate(blockPrefab, pos, Quaternion.identity);
+            Instantiate(
+                blockPrefab,
+                pos,
+                Quaternion.identity
+            );
 
         ApplyRotation(block.transform);
         ApplyModelMirror(block.transform);
@@ -263,9 +294,12 @@ public class BlockBuilder : MonoBehaviour
 
         placedBlocks.Add(gridPos, block);
 
-        if (placeSound != null && !placeSound.isPlaying)
+        if (placeSound != null &&
+            !placeSound.isPlaying)
         {
-            placeSound.pitch = Random.Range(0.90f, 1.20f);
+            placeSound.pitch =
+                Random.Range(0.90f, 1.20f);
+
             placeSound.Play();
         }
 
@@ -288,14 +322,23 @@ public class BlockBuilder : MonoBehaviour
 
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, 1000f, blockMask))
+        if (Physics.Raycast(
+            ray,
+            out hit,
+            1000f,
+            blockMask))
         {
-            GameObject block = hit.collider.gameObject;
+            GameObject block =
+                hit.collider.gameObject;
 
-            Vector3 pos = block.transform.position;
+            Vector3 pos =
+                block.transform.position;
 
-            int gx = Mathf.RoundToInt(pos.x / gridSize);
-            int gz = Mathf.RoundToInt(pos.z / gridSize);
+            int gx =
+                Mathf.RoundToInt(pos.x / gridSize);
+
+            int gz =
+                Mathf.RoundToInt(pos.z / gridSize);
 
             Vector2Int gridPos =
                 new Vector2Int(gx, gz);
@@ -315,7 +358,9 @@ public class BlockBuilder : MonoBehaviour
 
         if (previewPrefab != null)
         {
-            previewBlock = Instantiate(previewPrefab);
+            previewBlock =
+                Instantiate(previewPrefab);
+
             previewBlock.SetActive(false);
 
             // Force the next colour update
