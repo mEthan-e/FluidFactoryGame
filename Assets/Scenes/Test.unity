@@ -4742,6 +4742,11 @@ MonoBehaviour:
   blockMask:
     serializedVersion: 2
     m_Bits: 192
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 1024
+  placementCheckSize: {x: 0.9, y: 0.9, z: 0.9}
+  placementCheckOffset: {x: 0, y: 0.45, z: 0}
   placeSound: {fileID: 1255902642}
 --- !u!4 &1255902641
 Transform:
